@@ -1,3 +1,7 @@
+
+bin/
+.vs/
+
 # Prerequisites
 *.d
 
@@ -15,6 +19,7 @@
 *.so
 *.dylib
 *.dll
+*.sln
 
 # Fortran module files
 *.mod
@@ -30,3 +35,66 @@
 *.exe
 *.out
 *.app
+
+# Visual studio
+
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+*.userprefs
+
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+*.e2e
+
+*.vcxproj
+*.filters
