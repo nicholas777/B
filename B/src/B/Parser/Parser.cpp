@@ -9,17 +9,11 @@ namespace B
 	{
 		SyntaxTree tree;
 
-		if (m_Tokens[m_Index].IsArithmeticOperator())
-		{
-			Interpreter::ThrowException(Exception(ExceptionType::InvalidSyntaxException, "Invalid syntax", 0));
-			return tree;
-		}
-
 		while (m_Index < m_Tokens.size())
 		{
 			Token& token = m_Tokens[m_Index];
 
-			if (token.IsOperand() || token.Type == TokenType::LeftParen)
+			if (token.IsOperand() || token.Type == TokenType::LeftParen || token.Type == TokenType::Minus)
 			{
 				tree.Root = ProcessOperatorToken();
 			}
@@ -40,10 +34,31 @@ namespace B
 		SyntaxTreeNode result;
 		Token& operand = m_Tokens[m_Index];
 
+		if (operand.Type == TokenType::Minus)
+		{
+			if (!(m_Tokens.size() > m_Index + 1))
+			{
+				Interpreter::ThrowException(Exception(ExceptionType::InvalidSyntaxException, "Incomplete statement", 0));
+				return SyntaxTreeNode();
+			}
+
+			else if (!m_Tokens[m_Index + 1].IsNumber())
+			{
+				Interpreter::ThrowException(Exception(ExceptionType::InvalidSyntaxException, "Incomplete statement", 0));
+				return SyntaxTreeNode();
+			}
+
+			Advance(2);
+
+			result.token = operand;
+			result.children.push_back(m_Tokens[m_Index - 1]);
+			return result;
+		}
+		// 3 + (-3)
 		// Whether there is an operator or right parenthesis
 		if (m_Tokens.size() > m_Index + 1 )
 		{
-			if (m_Tokens[m_Index + 1].Type == TokenType::RightParen)
+			if (m_Tokens[m_Index + 1].Type == TokenType::RightParen && operand.Type != TokenType::LeftParen)
 				return operand;
 
 			Token& op = m_Tokens[m_Index + 1];
@@ -56,6 +71,23 @@ namespace B
 				{
 					Interpreter::ThrowException(Exception(ExceptionType::InvalidSyntaxException, "Incomplete statement", 0));
 					return SyntaxTreeNode();
+				}
+
+				else if (m_Tokens[m_Index].Type == TokenType::Minus)
+				{
+					result.token = m_Tokens[m_Index];
+
+					if (!m_Tokens[m_Index + 1].IsNumber())
+					{
+						Interpreter::ThrowException(Exception(ExceptionType::InvalidSyntaxException, "Incomplete statement", 0));
+						return SyntaxTreeNode();
+					}
+
+					result.children.push_back(m_Tokens[m_Index + 1]);
+
+					Advance(2);
+
+					return result;
 				}
 
 				else if (!m_Tokens[m_Index].IsNumber())
@@ -103,6 +135,12 @@ namespace B
 					result.children.push_back(operand);
 					result.children.push_back(ProcessOperatorToken());
 					return result;
+				}
+
+				else if (!m_Tokens[m_Index].IsNumber())
+				{
+					Interpreter::ThrowException(Exception(ExceptionType::InvalidSyntaxException, "Incomplete statement", 0));
+					return SyntaxTreeNode();
 				}
 
 				SyntaxTreeNode node = ProcessOperatorToken();
